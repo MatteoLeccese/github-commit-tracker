@@ -1,18 +1,19 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { CommitHistory } from "../interfaces/github.interfaces";
 import { CommitHistoryState } from "../interfaces/store.interfaces";
 import { AppDispatch } from "./store";
 
 const initialState: CommitHistoryState = {
   commitHistory: [],
+  hasErrors: false,
 };
 
 const commitHistorySlice = createSlice({
   name: 'commitHistorySlice',
   initialState,
   reducers: {
-    getAllCommitsFromRepo(state, action: PayloadAction<CommitHistory[]>) {
-      state.commitHistory = action.payload;
+    getAllCommitsFromRepo(state, action: PayloadAction<CommitHistoryState>) {
+      state.commitHistory = action.payload.commitHistory;
+      state.hasErrors = action.payload.hasErrors;
     },
   }
 });
@@ -24,9 +25,18 @@ export const fetchGithubCommits = (user: string, repo: string) => {
         `${import.meta.env.VITE_API_URL}/github?user=${user}&repository=${repo}`
       );
       const data = await res.json();
-      dispatch(getAllCommitsFromRepo(data));
+      if ("status" in data && data.status !== 200) {
+        throw Error("Project not found");
+      }
+      dispatch(getAllCommitsFromRepo({
+        commitHistory: data,
+        hasErrors: false,
+      }));
     } catch (err) {
-      dispatch(getAllCommitsFromRepo([]));
+      dispatch(getAllCommitsFromRepo({
+        commitHistory: [],
+        hasErrors: true,
+      }));
     }
   };
 };

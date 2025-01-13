@@ -2,6 +2,7 @@ import { CommitHistory } from "./github.interfaces";
 
 export interface CommitHistoryState {
   commitHistory: CommitHistory[];
+  hasErrors: boolean;
 }
 
 export interface RepositorySearchState {

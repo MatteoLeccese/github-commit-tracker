@@ -3,8 +3,8 @@ import { RepositorySearchState } from "../interfaces/store.interfaces";
 
 
 const initialState: RepositorySearchState = {
-  user: 'MatteoLeccese',
-  repo: 'FullTimeForce',
+  user: '',
+  repo: '',
 };
 
 const repositorySearchSlice = createSlice({
